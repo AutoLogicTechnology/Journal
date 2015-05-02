@@ -1,0 +1,53 @@
+---
+
+- hosts: all
+  sudo: true
+  gather_facts: false
+  roles:
+    - autologic-python 
+    - autologic-elasticsearch
+
+  tasks:
+    - name: Configure a virtual environment
+      pip:
+        requirements: "/development/requirements.txt"
+        virtualenv: "/development/journal/env"
+        virtualenv_command: "/usr/local/bin/virtualenv"
+
+    - name: Install Supervisor
+      pip:
+        name: "supervisor"
+        executable: "/usr/local/bin/pip"
+
+    - name: Move our configuration up
+      copy:
+        src: "files/supervisord.conf"
+        dest: "/etc/supervisord.conf"
+        mode: 0644
+
+    # - name: Move our sysconfig file up
+    #   copy:
+    #     src: "files/supervisord_options"
+    #     dest: "/etc/sysconfig/supervisord"
+    #     mode: 0644
+
+    - name: Install our init script
+      copy:
+        src: "files/supervisord"
+        dest: "/etc/init.d/supervisord"
+        mode : 0775
+
+    - name: Stop any existing Supervisord process
+      service:
+        name: "supervisord"
+        state: "stopped"
+
+    - name: Start Supervisord 
+      service:
+        name: "supervisord"
+        state: "started"
+
+    - name: Disable the default RHEL firewall
+      service:
+        name: "iptables"
+        state: "stopped"

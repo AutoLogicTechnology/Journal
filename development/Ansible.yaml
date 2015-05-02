@@ -1,0 +1,4 @@
+- src: https://github.com/AutoLogicTechnology/autologic-elasticsearch
+  path: roles/
+- src: https://github.com/AutoLogicTechnology/autologic-python.git
+  path: roles/

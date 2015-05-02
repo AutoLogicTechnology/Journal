@@ -1,0 +1,4 @@
+BINARY_LOC=/usr/local/bin
+OPTIONS="-c /etc/supervisord.conf"
+PIDFILE=/var/run/supervisord.pid
+WAIT_FOR_SUBPROCESSES=true

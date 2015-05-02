@@ -1,0 +1,4 @@
+journal/env
+development/.vagrant
+development/roles
+*.pyc
