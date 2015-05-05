@@ -10,7 +10,7 @@ ElasticSearch was selected due to its ease of use, Python library, RESTful API i
 
 ## Version
 
-0.1.1
+0.1.2
 
 ## Development
 

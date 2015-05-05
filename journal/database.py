@@ -31,7 +31,7 @@ class DocumentStore():
           'details': e.info
         }, False
 
-      if results['created']:
+      if result['created']:
         return {
           'created': result['created'],
           'id': result['_id'],

@@ -30,7 +30,8 @@ def journal():
 
     for hit in results['hits']['hits']:
       paycheck['data']['journals'].append({
-        hit['_id']: hit['_source'],
+        'id': hit['_id'],
+        'source': hit['_source']
       })
 
     return json.dumps(paycheck), 200
