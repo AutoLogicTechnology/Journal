@@ -10,7 +10,64 @@ ElasticSearch was selected due to its ease of use, Python library, RESTful API i
 
 ## Version
 
-0.2.0
+0.2.1
+
+## Filters
+
+Filtering is done on a per Journal basis. As a Journal comes into the API, it is filtered and cleaned up. This is done so that the Journal Callback doesn't have to do it, thus allowing for a faster invocation on the client-side. 
+
+These filters are simple Yapsy plugins, and Journal currently ships with two:
+
+- Yum
+- Default
+
+The Yum module will work with the incoming Journal data and filter out the crap, resulting in a clean response object that can be indexed nicely in ElasticSearch.
+
+The Default module simply applies to everything else.
+
+### Naming
+
+Filters are called for dynamically from the ```filters/``` directory. If an incoming Journal has a task which used the Ansible module ```apt```, for example, then a filter plugin called ```apt``` will be looked for.
+
+This does mean that each Ansible module can only have one filter plugin applied to it, but the minimal work done in Journal allows for the user to easily swap out filters or write their own, without having to delve into Journal's code.
+
+### Raw Results
+
+If there is no filter name to match the Ansible module name, the ```default``` filter will be used and data will simply be stored in a ```raw``` key.
+
+### Writing Filters
+
+Please note that writing a filter requires two files:
+
+- filter.py
+- filter.yapsy-plugin
+
+The former is the actual filter it's self, and it must follow this design pattern:
+
+```python
+from yapsy.IPlugin import IPlugin
+
+class filter(IPlugin):
+
+  def parse_task(self, task):
+    pass
+```
+
+Essentially, you need a class that inherits from ```IPlugin``` and contains a ```parse_task()``` method. That's all. Anything else you write into the class will be considered internal and go untouched by the filter system.
+
+The ```.yapsy-plugin``` file allows the Yapsy Plugin Manager to actually find the filters. It should look like this:
+
+```ini
+[Core]
+Name = filter
+Module = filter
+
+[Documentation]
+Author = Your Name
+Version = 0.1.0
+Website = http://mysuperfilter.com
+Description = It finds things and licks them.
+```
 
 ## Development
 
