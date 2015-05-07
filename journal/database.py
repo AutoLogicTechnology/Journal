@@ -4,9 +4,13 @@ import elasticsearch as es
 dbs = es.Elasticsearch()
 
 class DocumentStore():
+  """
+  A generic class (which can easily be replaced) used
+  for storing documents in ElasticSearch.
 
-  def __init__(self):
-    pass
+  The generic nature will hopefully allow for a more flexible
+  system in the future.
+  """
 
   def StoreJournal(self, journal):
     """

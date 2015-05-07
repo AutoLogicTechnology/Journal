@@ -25,12 +25,6 @@
         dest: "/etc/supervisord.conf"
         mode: 0644
 
-    # - name: Move our sysconfig file up
-    #   copy:
-    #     src: "files/supervisord_options"
-    #     dest: "/etc/sysconfig/supervisord"
-    #     mode: 0644
-
     - name: Install our init script
       copy:
         src: "files/supervisord"
@@ -51,3 +45,4 @@
       service:
         name: "iptables"
         state: "stopped"
+        enabled: false
