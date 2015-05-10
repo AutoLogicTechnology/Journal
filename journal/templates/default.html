@@ -1,0 +1,38 @@
+<div class="panel panel-default">
+<div class="panel-heading">{{task.module}} @ {{task.date|to_human_date}} {% if task.changed == True %}<span class="label label-warning">changed</span>{% else %}<span class="label label-default">unchanged</span>{% endif %}</div>
+<div class="panel-body">
+{% if task.has_warnings %}
+{% set count = 0 %}
+<p><strong>Warnings from "{{task.module}}":</strong></p>
+<table class="table">
+  <tr>
+    <th>#</th>
+    <th>Warning</th>
+  </tr>
+  {% for msg in task.raw['warnings'] %}
+  <tr>
+    <td class="col-lg-2">{{count}}</td>
+    <td class="col-lg-10">{{msg}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+<p><strong>Raw output from "{{task.module}}":</strong></p>
+<table class="table">
+  <tr>
+    <th>Key</th>
+    <th>Value</th>
+  </tr>
+  {% for key in task.raw %}
+  <tr>
+    <td class="col-lg-2">{{key}}</td>
+    {% if task.raw[key]|is_list %}
+    <td class="col-lg-10">{{task.raw[key]|join(', ')}}</td>
+    {% else %}
+    <td class="col-lg-10">{{task.raw[key]}}</td>
+    {% endif %}
+  </tr>
+  {% endfor %}
+</table>
+</div>
+</div>

@@ -6,4 +6,4 @@ Module = yum
 Author = Michael Crilly
 Version = 0.1.0
 Website = http://autologic.cm/
-Description = Yum filter for processing Ansible Yum module results.
+Description = Yum plugin for processing Ansible Yum module results.

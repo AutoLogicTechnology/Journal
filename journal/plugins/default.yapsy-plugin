@@ -6,4 +6,4 @@ Module = default
 Author = Michael Crilly
 Version = 0.1.0
 Website = http://autologic.cm/
-Description = Default, catch-all filter for everything else.
+Description = Default, catch-all plugin for everything else.

@@ -11,6 +11,9 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
 
   config.vm.provision :ansible do |ansible|
     ansible.playbook = "site.yml"
+    ansible.extra_vars = {
+      ansible_python_interpreter: '/usr/local/bin/python'
+    }
   end
 
   config.vm.define "autologic-journal"

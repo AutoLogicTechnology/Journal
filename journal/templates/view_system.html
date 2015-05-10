@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="well well-sm">
+  <span class="label label-success">{{journal.data.date|to_human_date}}</span>
+  <span class="label label-success">{{journal.data.user}}</span>
+  <span class="label label-success">{{journal.data.hosts|length}}</span>
+</div>
+<div role="tabpanel">
+
+  <!-- Nav tabs -->
+  <ul class="nav nav-tabs" role="tablist">
+    <li role="presentation" class="active"><a href="#all" aria-controls="all" role="tab" data-toggle="tab">All</a></li>
+    <li role="presentation"><a href="#changed" aria-controls="changed" role="tab" data-toggle="tab">Changed</a></li>
+  </ul>
+
+  <!-- Tab panes -->
+  <div class="tab-content">
+    
+    <div role="tabpanel" class="tab-pane active" id="all">
+    {% for host in journal.data.hosts %}
+      <h1>{{journal.data.hosts[host].name}}</h1>
+      {% for task in journal.data.hosts[host].tasks %}
+        {% set view_import = task.filter + ".html" %}
+        {% include view_import %}
+      {% endfor %}
+    {% endfor %}
+    </div>
+
+    <div role="tabpanel" class="tab-pane" id="changed">
+    {% for host in journal.data.hosts %}
+      <h1>{{journal.data.hosts[host].name}}</h1>
+      {% for task in journal.data.hosts[host].tasks %}
+        {% if task.changed %}
+          {% set view_import = task.filter + ".html" %}
+          {% include view_import %}
+        {% endif %}
+      {% endfor %}
+    {% endfor %}
+    </div>
+
+  </div>
+
+</div>
+
+{% endblock %}
+

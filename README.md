@@ -10,7 +10,7 @@ ElasticSearch was selected due to its ease of use, Python library, RESTful API i
 
 ## Version
 
-0.2.1
+0.3.0
 
 ## Filters
 
@@ -98,6 +98,10 @@ I'm not sure if it's something I've done wrong or whether it's a big in Vagrant,
 1. ```vagrant ssh```
 1. ```chmod 0600 ~/.ssh/authorized_keys```
 1. Logout and ```vagrant reload``` again.
+
+### Reload Bug
+
+Because the development environment uses supervisord, there seems to be a bug which prevents changes to the ```supervisord.conf``` from taking effect without a ```vagrant reload```. If you find your vchanges aren't happening, such as supervisord is trying to access a file you no longer consider in play, then reload the VM. 
 
 ## Todo List
 

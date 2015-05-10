@@ -1,0 +1,17 @@
+<div class="panel panel-default">
+  <div class="panel-heading">Yum @ {{task.date|to_human_date}} {% if task.changed %}<span class="label label-warning">changed</span>{% else %}<span class="label label-default">unchanged</span>{% endif %}</div>
+  <table class="table">
+    <tr>
+      <th>Category</th>
+      <th>Item</th>
+    </tr>
+    {% for category in task.yum %}
+      {% for item in task.yum[category] %}
+        <tr>
+          <td class="col-lg-2">{{category}}</td>
+          <td class="col-lg-10">{{item}}</td>
+        </tr>
+      {% endfor %}
+    {% endfor %}
+  </table>
+</div>

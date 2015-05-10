@@ -1,62 +1,33 @@
 
-from yapsy.PluginManager import PluginManager
+import jinja2
+import flask
+import time
 
-manager = PluginManager()
-manager.setPluginPlaces(["./filters", "./journal/filters"])
-manager.collectPlugins()
+blueprint = flask.Blueprint('filters', __name__)
 
-def process_journal_tasks(journal):
+@jinja2.contextfilter
+@blueprint.app_template_filter()
+def is_list(context, value):
   """
-  Essentially we're refinding and building a new
-  journal. The information will be easier for the
-  frontend UI template to work with, not to mention
-  generally more readable.
-  
-  We don't do this at the callback plugin level because
-  we want that process to be fast - collect and dump,
-  then process later.
+  Allow us to check for lists in our J2 
+  templates.
   """
 
-  sandbox = {
-    'date': journal['date'],
-    'environment': journal['environment'],
-    'user': journal['user'],
-    'hosts': {}
-  }
+  return isinstance(value, list)
 
-  for host in journal['hosts']:
-    sandbox['hosts'][host] = {
-      'name': journal['hosts'][host]['name'],
-      'failed': journal['hosts'][host]['failed'],
-      'success': journal['hosts'][host]['success'],
-      'tasks': [],
-    }
+@jinja2.contextfilter
+@blueprint.app_template_filter()
+def is_dict(context, value):
+  """
+  Allow us to check for a hash/dict in our
+  J2 templates.
+  """
 
-    for task in journal['hosts'][host]['tasks']:
-      filter_name = task['ansible_raw_results']['invocation']['module_name']
-      results, success = call_filter(filter_name, task)
+  return isinstance(value, dict)
 
-      if success:
-        sandbox['hosts'][host]['tasks'].append(results)
-      else:
-        return {
-          'err': 'Issue processing tasks for: %s[task][%s]' % (host, filter_name)
-        }, False 
-
-  return sandbox, True
-
-def call_filter(module_name, task):
-  plugin = manager.getPluginByName(module_name)
-
-  if plugin:
-    return plugin.plugin_object.parse_task(task)
-
-  # Unable to find a plugin, so we use default
-  plugin = manager.getPluginByName('default')
-
-  if plugin:
-    return plugin.plugin_object.parse_task(task)
-  else:
-    return {
-      'err': 'Unable to load given module_name: %s. Also unable to load default plugin.' % module_name
-    }, False
+@jinja2.contextfilter
+@blueprint.app_template_filter()
+def to_human_date(context, value):
+  informat = '%Y-%m-%dT%H:%M:%S'
+  raw = time.strptime(value, informat)
+  return time.strftime('%Y-%m-%d %H:%M:%S', raw)

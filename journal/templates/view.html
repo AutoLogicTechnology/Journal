@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="well well-sm">
+  <span class="label label-success">{{journal.data.date|to_human_date}}</span>
+  <span class="label label-success">{{journal.data.user}}</span>
+  <span class="label label-success">{{journal.data.hosts|length}}</span>
+</div>
+
+<table class="table">
+  <tr>
+    <th>System</th>
+    <th>Tasks</th>
+    <th>Success</th>
+    <th>Failed</th>
+    <th>Details</th>
+  </tr>
+  {% for host in journal.data.hosts %}    
+  <tr>
+    <td>{{journal.data.hosts[host].name}}</td>
+    <td>{{journal.data.hosts[host].tasks|length}}</td>
+    <td>{{journal.data.hosts[host].success}}</td>
+    <td>{{journal.data.hosts[host].failed}}</td>
+    <td><a href="/view/system/{{journal.data.hosts[host].name}}/{{journal.id}}">View Details</a></td>
+  </tr>
+  {% endfor %}
+</table>
+
+{% endblock %}
+

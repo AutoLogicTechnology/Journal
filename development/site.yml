@@ -14,10 +14,13 @@
         virtualenv: "/development/journal/env"
         virtualenv_command: "/usr/local/bin/virtualenv"
 
-    - name: Install Supervisor
+    - name: Install Supervisor and Gunicorn
       pip:
-        name: "supervisor"
+        name: "{{item}}"
         executable: "/usr/local/bin/pip"
+      with_items:
+        - "supervisor"
+        - "gunicorn"
 
     - name: Move our configuration up
       copy:

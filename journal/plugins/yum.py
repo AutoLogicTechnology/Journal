@@ -9,6 +9,7 @@ class Yum(IPlugin):
     self.installed_reg  = re.compile('[Dependency ]?Installed:\\n[ ]+?(.*)')
     self.updated_reg    = re.compile('Updated:\\n[ ]+?(.*)')
     self.replaced_reg   = re.compile('Replaced:\\n[ ]+?(.*)')
+    self.removed_reg   = re.compile('Removed:\\n[ ]+?(.*)')
     self.ignored_reg    = re.compile('(.*) providing (.*) is already installed')
 
   def parse_task(self, task):
@@ -23,8 +24,13 @@ class Yum(IPlugin):
         'is_raw': False,
         'date': task['date'],
         'position': task['position'],
+        'module': task['ansible_raw_results']['invocation']['module_name'],
+        'module_args': task['ansible_raw_results']['invocation']['module_args'],
+        'has_warnings': False,
+        'changed': task['ansible_raw_results']['changed'],
         'yum': {
           'installed': [],
+          'removed': [],
           'replaced': [],
           'updated': [],
           'ignored': [],
@@ -37,6 +43,11 @@ class Yum(IPlugin):
         installed = self.installed_reg.search(result)
         if installed:
           entry['yum']['installed'].append(installed.group(1).strip())
+          continue
+
+        removed = self.removed_reg.search(result)
+        if removed:
+          entry['yum']['removed'].append(removed.group(1).strip())
           continue
 
         updated = self.updated_reg.search(result)

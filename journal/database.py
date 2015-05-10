@@ -30,9 +30,9 @@ class DocumentStore():
         result = dbs.index(index='journals', doc_type='journal', body=journal)
       except es.ElasticsearchException as e:
         return {
-          'err': e.error,
-          'code': e.status_code,
-          'details': e.info
+          'err': e,
+          'code': None,
+          'details': None
         }, False
 
       if result['created']:
@@ -46,14 +46,15 @@ class DocumentStore():
           'err': 'Unable to index document. No exception was raised.'
         }, False
 
-  def FetchJournals(self):
+  def FetchJournals(self, limit=10):
     """
-    Fetchs ALL the Journals from the datastore.
+    Fetchs ALL or a limited number of the Journals
+    from the datastore.
 
     Returns a tuple: (results, success)
     """
     try:
-      results = dbs.search(index='journals', doc_type="journal")
+      results = dbs.search(index='journals', doc_type="journal", size=limit)
     except es.ElasticsearchException as e:
       return {
           'err': e.error,
