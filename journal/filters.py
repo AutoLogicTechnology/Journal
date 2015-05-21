@@ -5,8 +5,8 @@ import time
 
 blueprint = flask.Blueprint('filters', __name__)
 
-@jinja2.contextfilter
 @blueprint.app_template_filter()
+@jinja2.contextfilter
 def is_list(context, value):
   """
   Allow us to check for lists in our J2 
@@ -15,8 +15,8 @@ def is_list(context, value):
 
   return isinstance(value, list)
 
-@jinja2.contextfilter
 @blueprint.app_template_filter()
+@jinja2.contextfilter
 def is_dict(context, value):
   """
   Allow us to check for a hash/dict in our
@@ -25,8 +25,8 @@ def is_dict(context, value):
 
   return isinstance(value, dict)
 
-@jinja2.contextfilter
 @blueprint.app_template_filter()
+@jinja2.contextfilter
 def to_human_date(context, value):
   informat = '%Y-%m-%dT%H:%M:%S'
   raw = time.strptime(value, informat)
