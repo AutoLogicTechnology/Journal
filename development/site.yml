@@ -11,16 +11,16 @@
     - name: Configure a virtual environment
       pip:
         requirements: "/development/requirements.txt"
-        virtualenv: "/development/journal/env"
+        virtualenv: "/development/env"
         virtualenv_command: "/usr/local/bin/virtualenv"
 
-    - name: Install Supervisor and Gunicorn
+    - name: Install global Python packages
       pip:
         name: "{{item}}"
         executable: "/usr/local/bin/pip"
       with_items:
         - "supervisor"
-        - "gunicorn"
+        # - "gunicorn"
 
     - name: Move our configuration up
       copy:
@@ -34,6 +34,18 @@
         dest: "/etc/init.d/supervisord"
         mode : 0775
 
+    - name: Journal configuration directoru
+      file:
+        path: "/etc/journal"
+        state: "directory"
+        mode: 0755
+
+    - name: Move our configuration in place 
+      copy:
+        src: "files/journal.yml"
+        dest: "/etc/journal/"
+        mode: 0644
+
     - name: Stop any existing Supervisord process
       service:
         name: "supervisord"
@@ -43,6 +55,9 @@
       service:
         name: "supervisord"
         state: "started"
+
+    - name: Start Journal
+      command: /usr/local/bin/supervisorctl restart journal 
 
     - name: Disable the default RHEL firewall
       service:

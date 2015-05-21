@@ -1,7 +1,65 @@
 
 import elasticsearch as es 
 
-dbs = es.Elasticsearch()
+def init_logstore(app):
+  return LogStore(app.config)
+
+def init_documentstore(app):
+  return DocumentStore(app.config)
+
+class LogStore():
+  """A generic class for handling log messages and
+  storing them in ElasticSearch.
+
+  Hopefully this class's generic nature mean it can 
+  be swapped in and out for better examples.
+  """
+
+  def __init__(self, config=None):
+    if config and 'JOURNAL' in config:
+      self.index = config['JOURNAL']['logging']['index']
+    else:
+      self.index = 'journal-logs'
+
+    print config
+
+    self.dbs = es.Elasticsearch(hosts=config['JOURNAL']['database']['servers'])
+
+  def LogMessage(self, message):
+    """
+    Store a message as a document in ElasticSearch 
+    """
+
+    log_message = {
+      'message': message 
+    }
+
+    try: 
+      result = self.dbs.index(index=self.index, doc_type='log_message', body=log_message)
+    except es.ElasticsearchException as e:
+      return {
+        'err': e
+      }, False
+
+    if result['created']:
+      return {
+        'created': result['created'],
+        'id': result['_id']
+      }, True
+    else:
+      {
+        'err': 'Error logging message. No exception was raised'
+      }, False
+
+  def RetrieveLogs(self, limit=100):
+    try:
+      results = self.dbs.search(index=self.index, doc_type="log_message", size=limit)
+    except es.ElasticsearchException as e:
+      return {
+          'err': e.error,
+        }, False
+
+    return results, True
 
 class DocumentStore():
   """
@@ -11,6 +69,14 @@ class DocumentStore():
   The generic nature will hopefully allow for a more flexible
   system in the future.
   """
+
+  def __init__(self, config=None):
+    if config and 'JOURNAL' in config:
+      self.index = config['JOURNAL']['database']['index']
+    else:
+      self.index = 'journal-logs'
+
+    self.dbs = es.Elasticsearch(hosts=config['JOURNAL']['database']['servers'])
 
   def StoreJournal(self, journal):
     """
@@ -27,12 +93,10 @@ class DocumentStore():
 
     if isinstance(journal, dict):
       try:
-        result = dbs.index(index='journals', doc_type='journal', body=journal)
+        result = self.dbs.index(index=self.index, doc_type='journal', body=journal)
       except es.ElasticsearchException as e:
         return {
-          'err': e,
-          'code': None,
-          'details': None
+          'err': e
         }, False
 
       if result['created']:
@@ -45,6 +109,10 @@ class DocumentStore():
         return {
           'err': 'Unable to index document. No exception was raised.'
         }, False
+    else:
+      return {
+        'err': 'Invalid journal given: is not a dictionary, is a %s' % type(journal)
+      }, False
 
   def FetchJournals(self, limit=10):
     """
@@ -54,12 +122,10 @@ class DocumentStore():
     Returns a tuple: (results, success)
     """
     try:
-      results = dbs.search(index='journals', doc_type="journal", size=limit)
+      results = self.dbs.search(index=self.index, doc_type="journal", size=limit)
     except es.ElasticsearchException as e:
       return {
           'err': e.error,
-          'code': e.status_code,
-          'details': e.info
         }, False
 
     return results, True
@@ -72,12 +138,10 @@ class DocumentStore():
     """
     if journal_id:
       try:
-        results = dbs.get(index='journals', doc_type='journal', id=journal_id)
+        results = self.dbs.get(index=self.index, doc_type='journal', id=journal_id)
       except es.ElasticsearchException as e:
         return {
-          'err': e.error,
-          'code': e.status_code,
-          'details': e.info
+          'err': e.error
         }, False
 
       return results, True

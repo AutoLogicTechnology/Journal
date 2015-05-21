@@ -1,24 +1,35 @@
 {% extends "base.html" %}
 {% block content %}
+<div class="row">
+  <div class="col-lg-4">
+    <div id="systems-chart"></div>
+  </div>
+  <div class="col-lg-4">
+    <div id="users-chart"></div>
+  </div>
+  <div class="col-lg-4">
+    <div id="modules-chart"></div>
+  </div>
+</div>
 <table class="table">
-  <tr>
+  <thead>
     <th>User</th>
     <th>Date</th>
     <th>Systems Hit</th>
     <th>Details</th>
-  </tr>
+  </thead>
   {% if journals != false %}
   {% for j in journals.data.journals %}
   <tr>
-    <th>{{j.source.user}}</th>
-    <th>{{j.source.date|to_human_date}}</th>
-    <th>{{j.source.hosts|length}}</th>
-    <th><a href="/view/{{j.id}}">View Details</a></th>
+    <td>{{j.source.user}}</td>
+    <td>{{j.source.date|to_human_date}}</td>
+    <td>{{j.source.hosts|length}}</td>
+    <td><a href="/view/{{j.id}}">View Details</a></td>
   </tr>
   {% endfor %}
   {% else %}
   <tr>
-    <td colspan="4"><strong>No data currently available.</strong></td>
+    <td colspan="4"><strong class="text-center">No data currently available.</strong></td>
   </tr>
   {% endif %}
 </table>

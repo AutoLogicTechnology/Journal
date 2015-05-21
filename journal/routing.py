@@ -1,22 +1,25 @@
 
-import database
-import plugins
-import helpers
-
 from flask import render_template
+import plugins
 
-dbs = database.DocumentStore()
+dbs = None
+lgs = None 
+
+def init(app):
+  global dbs, lgs
+  
+  dbs = app.config['db_conn']
+  lgs = app.config['logging']
 
 # Views
 def ui_get_index():
   journals, success = journal_get_all()
 
   if success:
-    # helpers.parse_journal_dates(journals)
-
     journals['data']['journals'].sort(key=lambda item:item['source']['date'], reverse=True)
     return render_template('index.html', journals=journals)
   else:
+    lgs.LogMessage(journals)
     return render_template('index.html', journals=False)
 
 def ui_get_view_system(system_id, journal_id):
@@ -29,6 +32,7 @@ def ui_get_view_system(system_id, journal_id):
 
     return render_template('view_system.html', journal=journal)
   else:
+    lgs.LogMessage(journal)
     return render_template('view.html', journal=False)
 
 def ui_get_view_journal(journal_id):
@@ -37,6 +41,7 @@ def ui_get_view_journal(journal_id):
   if success:
     return render_template('view.html', journal=journal)
   else:
+    lgs.LogMessage(journal)
     return render_template('view.html', journal=False)
 
 
@@ -57,6 +62,8 @@ def paycheck(results):
   return paycheck
 
 def error(msg, results):
+  lgs.LogMessage(results)
+
   return {
     'err': msg,
     'results': results
@@ -100,9 +107,12 @@ def journal_get_one(journal_id):
         'id': results['_id']
       }, True
   else:
-    return {
+    error = {
       'err': 'Record not found.',
       'id': journal_id
-    }, False
+    }
+
+    lgs.LogMessage(error) 
+    return error, False
 
 

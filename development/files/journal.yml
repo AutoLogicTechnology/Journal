@@ -1,0 +1,15 @@
+---
+application:
+  debugging: true
+
+database:
+  index: 'journal-data'
+
+  # ElasticSearch-py can take a list of dicts
+  # whoch contain information about several servers.
+  servers:
+    - server: 'localhost'
+      port: '9200'
+
+logging:
+  index: 'journal-logs'
