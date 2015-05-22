@@ -10,11 +10,11 @@ ElasticSearch was selected due to its ease of use, Python library, RESTful API i
 
 ## Version
 
-0.4.3
+0.4.4
 
-## Filters
+## Plugins
 
-Filtering is done on a per Journal basis. As a Journal comes into the API, it is filtered and cleaned up. This is done so that the Journal Callback doesn't have to do it, thus allowing for a faster invocation on the client-side. 
+Filtering the deis done on a per Journal basis. As a Journal comes into the API, it is filtered and cleaned up. This is done so that the Journal Callback doesn't have to do it, thus allowing for a faster invocation on the client-side. 
 
 These filters are simple Yapsy plugins, and Journal currently ships with two:
 

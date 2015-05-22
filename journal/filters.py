@@ -3,7 +3,7 @@ import jinja2
 import flask
 import time
 
-blueprint = flask.Blueprint('filters', __name__)
+blueprint = flask.Blueprint('journal-filters', __name__)
 
 @blueprint.app_template_filter()
 @jinja2.contextfilter
