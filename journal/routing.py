@@ -1,15 +1,12 @@
 
-from flask import render_template
+from werkzeug.local import LocalProxy
+from flask import render_template, current_app
+
 import plugins
+import helpers
 
-dbs = None
-lgs = None 
-
-def init(app):
-  global dbs, lgs
-  
-  dbs = app.config['db_conn']
-  lgs = app.config['logging']
+database = LocalProxy(lambda: current_app.config['database'])
+logging = LocalProxy(lambda: current_app.config['logging'])
 
 # Views
 def ui_get_index():
@@ -17,10 +14,17 @@ def ui_get_index():
 
   if success:
     journals['data']['journals'].sort(key=lambda item:item['source']['date'], reverse=True)
-    return render_template('index.html', journals=journals)
+    sys_stats = helpers.system_stats(journals['data']['journals'])
+
+    print sys_stats
+
+    return render_template('index.html', journals=journals, stats=sys_stats)
   else:
-    lgs.LogMessage(journals)
+    logging.LogMessage(journals)
     return render_template('index.html', journals=False)
+
+def ui_get_users():
+  journals, success = journal_get_all()
 
 def ui_get_view_system(system_id, journal_id):
   journal, success = journal_get_one(journal_id)
@@ -32,7 +36,7 @@ def ui_get_view_system(system_id, journal_id):
 
     return render_template('view_system.html', journal=journal)
   else:
-    lgs.LogMessage(journal)
+    logging.LogMessage(journal)
     return render_template('view.html', journal=False)
 
 def ui_get_view_journal(journal_id):
@@ -41,7 +45,7 @@ def ui_get_view_journal(journal_id):
   if success:
     return render_template('view.html', journal=journal)
   else:
-    lgs.LogMessage(journal)
+    logging.LogMessage(journal)
     return render_template('view.html', journal=False)
 
 
@@ -62,7 +66,7 @@ def paycheck(results):
   return paycheck
 
 def error(msg, results):
-  lgs.LogMessage(results)
+  logging.LogMessage(results)
 
   return {
     'err': msg,
@@ -75,7 +79,7 @@ def journal_post(journal):
   if not success:
     return error('Unable to index journal - filter related failure.', results), False
 
-  results, success = dbs.StoreJournal(results)
+  results, success = database.StoreJournal(results)
 
   if success:
     return results, True
@@ -83,7 +87,7 @@ def journal_post(journal):
     return error('Unable to index journal.', results), False
 
 def journal_get_limit(limit=10):
-  results, success = dbs.FetchJournals(limit=limit)
+  results, success = database.FetchJournals(limit=limit)
 
   if success:
     return paycheck(results), True
@@ -91,7 +95,7 @@ def journal_get_limit(limit=10):
     return error('Unable to fetch Journals.', results), False
 
 def journal_get_all():
-  results, success = dbs.FetchJournals()
+  results, success = database.FetchJournals()
 
   if success:
     return paycheck(results), True
@@ -99,7 +103,7 @@ def journal_get_all():
     return error('Unable to fetch Journals.', results), False
 
 def journal_get_one(journal_id):
-  results, success = dbs.FetchJournal(journal_id)
+  results, success = database.FetchJournal(journal_id)
 
   if success:
     return {
@@ -112,7 +116,7 @@ def journal_get_one(journal_id):
       'id': journal_id
     }
 
-    lgs.LogMessage(error) 
+    logging.LogMessage(error) 
     return error, False
 
 

@@ -11,16 +11,12 @@ def create_app(config_file):
     app = Flask(__name__)
     app.config.from_pyfile(config_file)
 
-    app.config['db_conn'] = database.init_documentstore(app)
+    app.config['database'] = database.init_documentstore(app)
     app.config['logging'] = database.init_logstore(app)
 
     app.register_blueprint(filters.blueprint)
     app.register_blueprint(ui.blueprint)
     app.register_blueprint(api.blueprint)
-
-    ui.init(app)
-    api.init(app)
-    
   except:
     raise
 

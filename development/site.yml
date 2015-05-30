@@ -3,6 +3,9 @@
 - hosts: all
   sudo: true
   gather_facts: false
+  vars:
+    autologic_elasticsearch_configuration:
+      cluster.name: "supercluster"
   roles:
     - autologic-python 
     - autologic-elasticsearch

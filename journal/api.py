@@ -2,14 +2,13 @@
 import json
 import routing
 
-from flask import Blueprint, request
+from werkzeug.local import LocalProxy
+from flask import Blueprint, request, current_app
 
 blueprint = Blueprint('journal-api', __name__)
-lgs = None
 
-def init(app):
-  lgs = app.config['logging']
-  routing.init(app)
+logging = LocalProxy(lambda: current_app.config['logging'])
+
 
 @blueprint.errorhandler(404)
 def return_404(e):
@@ -25,7 +24,7 @@ def journal():
     if not success:
       return json.dumps(results), 500
     else:
-      lgs.LogMessage(results)
+      logging.LogMessage(results)
       return json.dumps(results), 201
 
   if request.method == 'GET':
@@ -34,7 +33,7 @@ def journal():
     if success:
       return json.dumps(results), 200
     else:
-      lgs.LogMessage(results)
+      logging.LogMessage(results)
       return json.dumps(results), 500
 
 @blueprint.route("/api/journal/<string:journal_id>", methods=['GET'])
@@ -44,12 +43,12 @@ def journal_id(journal_id):
   if success:
     return json.dumps(results), 200
   else:
-    lgs.LogMessage(results)
+    logging.LogMessage(results)
     return json.dumps(results), 404
 
 @blueprint.route("/api/logs", methods=['GET'])
 def logs():
-  results, success = lgs.RetrieveLogs()
+  results, success = logging.RetrieveLogs()
 
   if success:
     return json.dumps(results), 200

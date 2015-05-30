@@ -6,4 +6,4 @@ debug = True
 proc_name = 'gunicorn.proc'
 pidfile = '/tmp/gunicorn.pid'
 logfile = '/var/log/gunicorn/debug.log'
-loglevel = 'debug'
+loglevel = 'error'

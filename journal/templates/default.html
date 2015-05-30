@@ -24,6 +24,7 @@
     <th>Value</th>
   </tr>
   {% for key in task.raw %}
+  {% if key != "invocation" %}
   <tr>
     <td class="col-lg-2">{{key}}</td>
     {% if task.raw[key]|is_list %}
@@ -32,6 +33,7 @@
     <td class="col-lg-10">{{task.raw[key]}}</td>
     {% endif %}
   </tr>
+  {% endif %}
   {% endfor %}
 </table>
 </div>

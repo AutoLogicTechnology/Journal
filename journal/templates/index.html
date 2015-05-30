@@ -11,26 +11,50 @@
     <div id="modules-chart"></div>
   </div>
 </div>
-<table class="table">
-  <thead>
-    <th>User</th>
-    <th>Date</th>
-    <th>Systems Hit</th>
-    <th>Details</th>
-  </thead>
-  {% if journals != false %}
-  {% for j in journals.data.journals %}
-  <tr>
-    <td>{{j.source.user}}</td>
-    <td>{{j.source.date|to_human_date}}</td>
-    <td>{{j.source.hosts|length}}</td>
-    <td><a href="/view/{{j.id}}">View Details</a></td>
-  </tr>
-  {% endfor %}
-  {% else %}
-  <tr>
-    <td colspan="4"><strong class="text-center">No data currently available.</strong></td>
-  </tr>
-  {% endif %}
-</table>
-{% endblock %}
+<div class="row">
+  <div class="col-lg-6">
+    <table class="table">
+      <thead>
+        <th>Hostname</th>
+        <th>Hits</th>
+      </thead>
+      {% if stats != false %}
+      {% for s in stats %}
+      <tr>
+        <td><a href="#">{{stats[s].name}}</a></td>
+        <td>{{stats[s].hits}}</td>
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr>
+        <td colspan="2"><strong class="text-center">No data.</strong></td>
+      </tr>
+      {% endif %}
+    </table>
+  </div>
+  <div class="col-lg-6">
+    <table class="table">
+      <thead>
+        <th>User</th>
+        <th>Date</th>
+        <th>Systems Hit</th>
+        <th>Details</th>
+      </thead>
+      {% if journals != false %}
+      {% for j in journals.data.journals %}
+      <tr>
+        <td>{{j.source.user}}</td>
+        <td>{{j.source.date|to_human_date}}</td>
+        <td>{{j.source.hosts|length}}</td>
+        <td><a href="/view/{{j.id}}">View Details</a></td>
+      </tr>
+      {% endfor %}
+      {% else %}
+      <tr>
+        <td colspan="4"><strong class="text-center">No data.</strong></td>
+      </tr>
+      {% endif %}
+    </table>
+    {% endblock %}
+  </div>
+</div>
